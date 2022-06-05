@@ -8,7 +8,7 @@ http
   .listen(3000)
 
 if (process.env.DISCORD_BOT_TOKEN == undefined) {
-  console.error('tokenが設定されていません！')
+  console.error('token is not set')
   process.exit(0)
 }
 

@@ -2,12 +2,12 @@ const Discord = require('discord.js')
 const client = new Discord.Client()
 
 client.on('ready', () => {
-  console.log(`${client.user.tag}にログインしました！`)
+  console.log(`${client.user.tag} I'm in`)
 })
 
 client.on('message', message => {
   if (message.mentions.users.has(client.user.id)) {
-    message.reply('呼びましたか？')
+    message.reply('call me?')
     return
   }
 })
