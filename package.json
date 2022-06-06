@@ -10,9 +10,13 @@
   },
   "scripts": {
     "start": "node index.js",
+    "start-dev": "nodemon index.js",
     "test": "node index.js"
   },
   "engines": {
     "node": "16.x"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.16"
   }
 }
