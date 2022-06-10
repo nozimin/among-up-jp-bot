@@ -1,23 +1,33 @@
+const { kansenPermission, visitorPermission } = require('../services/permision_creator.js')
+
 module.exports = {
 	data: {
-        name: 'create_lobby',
-        description: 'ゲームロビーを作成します',
-        options: [
-          {
-            name: 'lobby_name',
-            type: 'STRING',
-            description: 'ゲームロビー名 (例: 「初心者歓迎 skeldやります」)',
-            required: true,
-          }
-        ]
-    },
+    name: 'create_lobby',
+    description: 'ゲームロビーを作成します',
+    options: [
+      {
+        name: 'lobby_name',
+        type: 'STRING',
+        description: 'ゲームロビー名 (例: 「初心者歓迎 skeldやります」)',
+        required: true,
+      }
+    ]
+  },
 	async execute(interaction) {
+    const Datastore = require('nedb')
+    var lobbiesDB   = new Datastore({ filename: 'db/lobbies', autoload: true , timestampData: true })
+
     let lobby_name = interaction.options.getString('lobby_name')
+
+    let kansen_permission = await kansenPermission(interaction.guildId)
+    let visitor_permission = await visitorPermission(interaction.guildId)
 
     interaction.guild.channels.create(
       lobby_name,
       { type: "GUILD_CATEGORY" }
     ).then(category => {
+      // ロール制御
+      category.permissionOverwrites.set([ kansen_permission, visitor_permission ])
       // メインVC作成
       category.createChannel(
         'ゲーム中VC',
@@ -25,14 +35,6 @@ module.exports = {
       ).then(vc => {
         // ゲームロビーセッション用に招待作成
         vc.createInvite({ maxAge: 0, reason: 'game lobby session' })
-
-        // TODO: ロール制御
-        // vc.permissionOverwrites.set(
-        //   {
-        //     id: 管理者id,
-        //     deny: ['VIEW_CHANNEL']
-        //   },
-        // )
       })
       // 幽霊VC作成
       category.createChannel('待機&幽霊用VC', { type: 'GUILD_VOICE', userLimit: 99 })
@@ -50,6 +52,15 @@ module.exports = {
           ].join('\n'),
           ephemeral: true
         })
+        // DB登録
+        lobbiesDB.insert(
+          {
+            guild_id: interaction.guildId,
+            name: lobby_name,
+            lobby_owner_id: interaction.member.id,
+            deleted: false
+          }
+        )
       })
     })
 	}
