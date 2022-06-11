@@ -1,3 +1,5 @@
+const { kind_roles } = require('../services/kind_role_link.js')
+
 module.exports = {
 	data: {
     name: 'set_role',
@@ -14,11 +16,7 @@ module.exports = {
         type: 'STRING',
         description: '対象ロールの役割',
         required: true,
-        choices: [
-          { name: '観戦者', value: 'kansen' },
-          { name: '訪問者', value: 'visitor' },
-          { name: 'モデレーター', value: 'moderator' },
-        ],
+        choices: kind_roles,
       }
     ]
   },
