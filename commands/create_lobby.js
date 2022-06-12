@@ -56,6 +56,7 @@ module.exports = {
         lobbiesDB.insert(
           {
             guild_id: interaction.guildId,
+            category_id: category.id,
             name: lobby_name,
             lobby_owner_id: interaction.member.id,
             deleted: false

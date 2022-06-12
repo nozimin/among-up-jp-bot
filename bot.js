@@ -21,6 +21,13 @@ for (const file of commandFiles) {
   commands[command.data.name] = command
 }
 
+const customFiles = fs.readdirSync('./customs').filter(file => file.endsWith('.js'))
+const customs = {}
+customFiles.map(file => {
+  const custom = require(`./customs/${file}`)
+  customs[custom.data.name] = custom
+})
+
 client.once('ready', async () => {
   const data = []
   for (const commandName in commands) {
@@ -40,6 +47,20 @@ client.on('interactionCreate', async interaction => {
     console.error(error)
     await interaction.reply({
       content: 'ERROR: Slash Command',
+      ephemeral: true,
+    })
+  }
+})
+
+client.on('interactionCreate', async interaction => {
+  if (!interaction.isSelectMenu()) return
+  const custom = customs[interaction.customId]
+  try {
+    await custom.execute(interaction)
+  } catch (error) {
+    console.error(error)
+    await interaction.reply({
+      content: 'ERROR: Select Menu',
       ephemeral: true,
     })
   }
