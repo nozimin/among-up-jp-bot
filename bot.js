@@ -10,6 +10,7 @@ const fs = require('fs')
 
 // メッセージの
 client.on('messageCreate', async message => {
+  if (message.author.bot) return
   console.log(message.content)
 })
 
@@ -38,7 +39,7 @@ client.on('interactionCreate', async interaction => {
   } catch (error) {
     console.error(error)
     await interaction.reply({
-      content: 'There was an error while executing this command!',
+      content: 'ERROR: Slash Command',
       ephemeral: true,
     })
   }
