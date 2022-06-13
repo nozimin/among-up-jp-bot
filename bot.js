@@ -10,6 +10,7 @@ const fs = require('fs')
 
 // メッセージの
 client.on('messageCreate', async message => {
+  if (message.author.bot) return
   console.log(message.content)
 })
 
@@ -19,6 +20,13 @@ for (const file of commandFiles) {
   const command = require(`./commands/${file}`)
   commands[command.data.name] = command
 }
+
+const customFiles = fs.readdirSync('./customs').filter(file => file.endsWith('.js'))
+const customs = {}
+customFiles.map(file => {
+  const custom = require(`./customs/${file}`)
+  customs[custom.data.name] = custom
+})
 
 client.once('ready', async () => {
   const data = []
@@ -38,7 +46,21 @@ client.on('interactionCreate', async interaction => {
   } catch (error) {
     console.error(error)
     await interaction.reply({
-      content: 'There was an error while executing this command!',
+      content: 'ERROR: Slash Command',
+      ephemeral: true,
+    })
+  }
+})
+
+client.on('interactionCreate', async interaction => {
+  if (!interaction.isSelectMenu()) return
+  const custom = customs[interaction.customId]
+  try {
+    await custom.execute(interaction)
+  } catch (error) {
+    console.error(error)
+    await interaction.reply({
+      content: 'ERROR: Select Menu',
       ephemeral: true,
     })
   }
