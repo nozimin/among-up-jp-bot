@@ -17,7 +17,6 @@ module.exports = {
     })
 
     // チャンネル取得して削除
-    console.log(lobby)
     category_channel = interaction.guild.channels.cache.get(lobby.category_id)
     if (category_channel === undefined || !category_channel.deletable) return await interaction.update({ content: '削除できませんでした', components: [] })
 
